@@ -1,5 +1,3 @@
-// Jenkinsfile for CI only (Windows Agent)
-
 pipeline {
     agent any
 
@@ -20,17 +18,17 @@ pipeline {
                 echo 'Building the web application...'
                 bat 'npm run build'
 
-                echo '--- Built HTML Content in Build Directory ---'
-                // Only display if file exists
+                echo '--- Verifying build output ---'
                 bat '''
                 if exist build\\index.html (
+                    echo index.html successfully built in build\\
                     type build\\index.html
                 ) else (
-                    echo build\\index.html not found!
+                    echo ERROR: build\\index.html not found!
                     exit 1
                 )
                 '''
-                echo '-----------------------------------------------'
+                echo '--------------------------------'
             }
         }
 
