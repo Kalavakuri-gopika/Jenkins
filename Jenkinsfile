@@ -21,7 +21,15 @@ pipeline {
                 bat 'npm run build'
 
                 echo '--- Built HTML Content in Build Directory ---'
-                bat 'type build\\index.html'
+                // Only display if file exists
+                bat '''
+                if exist build\\index.html (
+                    type build\\index.html
+                ) else (
+                    echo build\\index.html not found!
+                    exit 1
+                )
+                '''
                 echo '-----------------------------------------------'
             }
         }
