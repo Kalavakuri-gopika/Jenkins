@@ -1,0 +1,13 @@
+{
+  "name": "hello-world-web-app",
+  "version": "1.0.0",
+  "description": "A simple hello world app for Jenkins CD",
+  "main": "index.js",
+  "scripts": {
+    "build": "mkdir -p build && cp index.html build/",
+    "test": "echo \"Running dummy tests: All tests passed!\" && exit 0",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
