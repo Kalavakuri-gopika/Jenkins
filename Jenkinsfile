@@ -1,56 +1,65 @@
-// Example Jenkinsfile (Declarative Pipeline)
+// Jenkinsfile for Continuous Integration (CI) only
+
 pipeline {
+    // 1. Agent: Specifies where the pipeline will run. 'any' means any available agent.
     agent any
+
+    // Optional: Define tools needed globally (requires the corresponding Jenkins plugin, e.g., NodeJS Plugin)
+    tools {
+        // You may need to replace 'node-20' with the name you configured in Manage Jenkins -> Global Tool Configuration
+        nodejs 'node-20' 
+    }
+
+    // 2. Stages: Define the sequence of CI steps.
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/Kalavakuri-gopika/Jenkins.git'
+                echo 'Starting code checkout from GitHub...'
+                // FIX: Explicitly specify the correct repository URL and the 'main' branch.
+                git url: 'https://github.com/Kalavakuri-gopika/Jenkins.git', branch: 'main'
+                echo 'Code checkout complete.'
             }
         }
+
         stage('Build') {
             steps {
+                echo 'Installing Node.js dependencies...'
+                // 'npm install' downloads dependencies defined in package.json
                 sh 'npm install'
-                // This builds the app and puts index.html into the 'build/' folder
+                
+                echo 'Building the web application...'
+                // 'npm run build' runs the build script (e.g., creating the 'build/' folder)
                 sh 'npm run build'
+                
+                // Optional: Print the contents of the final HTML file for verification
+                sh 'echo "--- Built HTML Content in Build Directory ---"'
+                sh 'cat build/index.html'
+                sh 'echo "-----------------------------------------------"'
             }
         }
+
         stage('Test') {
             steps {
+                echo 'Running automated tests...'
+                // 'npm test' runs your test suite (e.g., Jest, Mocha)
                 sh 'npm test' 
+                echo 'Tests complete.'
             }
         }
-        stage('Deploy to Staging') {
-            // NOTE: Replace 'user@staging-server' and 'your-staging-domain.com'
-            environment {
-                STAGING_HOST = 'your-staging-domain.com' // <-- Define the public URL
-                STAGING_PATH = '/var/www/html/staging'
-            }
-            steps {
-                sh 'scp -r build/ user@staging-server:/var/www/html/staging' 
-                
-                // 1. Display the content of the built HTML file for confirmation
-                sh 'echo "--- Built HTML Content ---"'
-                sh 'cat build/index.html'
-                sh 'echo "--------------------------"'
-                
-                // 2. Print the final public link
-                sh "echo 'Web App Deployed to STAGING at:'"
-                sh "echo '👉 http://${env.STAGING_HOST}/'" // Print the clickable URL
-            }
+        
+        // Deployment stages are intentionally omitted
+    }
+    
+    // 3. Post-Actions: Define actions after the main stages complete.
+    post {
+        always {
+            echo 'CI Pipeline execution finished.'
         }
-        stage('Deploy to Production') {
-            // NOTE: Replace 'user@prod-server' and 'your-production-domain.com'
-            environment {
-                PROD_HOST = 'your-production-domain.com' // <-- Define the public URL
-            }
-            input {
-                message "Deploy to production?"
-            }
-            steps {
-                sh 'scp -r build/ user@prod-server:/var/www/html/prod'
-                sh "echo 'Web App Deployed to PRODUCTION at:'"
-                sh "echo '🚀 http://${env.PROD_HOST}/'" // Print the clickable URL
-            }
+        success {
+            echo 'Build successful! Ready for manual deployment.'
+        }
+        failure {
+            echo 'Build or Test failed. Please check the logs.'
         }
     }
 }
