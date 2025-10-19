@@ -1,5 +1,15 @@
-"scripts": {
-  "start": "node index.js",
-  "build": "cmd /c \"if not exist build mkdir build && copy /Y index.html build\\index.html\"",
-  "test": "echo Running tests... && exit 0"
+{
+  "name": "hello-world-web-app",
+  "version": "1.0.0",
+  "description": "Sample web app for Jenkins CI",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "build": "cmd /c \"if not exist build mkdir build && copy /Y index.html build\\\\index.html\"",
+    "test": "echo Running tests... && exit 0"
+  },
+  "author": "Kalavakuri Gopika",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {}
 }
