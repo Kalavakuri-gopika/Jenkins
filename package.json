@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build": "cmd /c \"if not exist build mkdir build && copy /Y index.html build\\\\index.html\"",
+    "build": "build.bat",
     "test": "echo Running tests... && exit 0"
   },
   "author": "Kalavakuri Gopika",
