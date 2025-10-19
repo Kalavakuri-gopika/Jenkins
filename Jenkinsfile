@@ -1,4 +1,4 @@
-// Jenkinsfile for CI only (Windows Agent, no NodeJS plugin)
+// Jenkinsfile for CI only (Windows Agent)
 
 pipeline {
     agent any
