@@ -46,7 +46,9 @@ pipeline {
             echo 'CI Pipeline execution finished.'
         }
         success {
-            echo 'Build successful! Ready for manual deployment.'
+            echo 'Build successful! Archiving artifacts...'
+            archiveArtifacts artifacts: 'build/index.html', fingerprint: true
+            echo 'You can access the HTML via Jenkins artifacts URL.'
         }
         failure {
             echo 'Build or Test failed. Please check the logs.'
