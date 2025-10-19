@@ -4,9 +4,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Starting code checkout from GitHub...'
+                echo 'Checking out code...'
                 git url: 'https://github.com/Kalavakuri-gopika/Jenkins.git', branch: 'main'
-                echo 'Code checkout complete.'
             }
         }
 
@@ -15,43 +14,42 @@ pipeline {
                 echo 'Installing Node.js dependencies...'
                 bat 'npm install'
 
-                echo 'Building the web application...'
+                echo 'Building web app...'
                 bat 'npm run build'
 
-                echo '--- Verifying build output ---'
+                echo 'Verifying build output...'
                 bat '''
                 if exist build\\index.html (
-                    echo index.html successfully built in build\\
-                    type build\\index.html
+                    echo index.html successfully built
                 ) else (
-                    echo ERROR: build\\index.html not found!
+                    echo ERROR: build\\index.html not found
                     exit 1
                 )
                 '''
-                echo '--------------------------------'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running automated tests...'
+                echo 'Running tests...'
                 bat 'npm test'
-                echo 'Tests complete.'
+            }
+        }
+
+        stage('Deploy via Streamlit') {
+            steps {
+                echo 'Launching Streamlit server...'
+                bat 'streamlit run streamlit_app.py --server.port 8501'
             }
         }
     }
 
     post {
-        always {
-            echo 'CI Pipeline execution finished.'
-        }
         success {
-            echo 'Build successful! Archiving artifacts...'
-            archiveArtifacts artifacts: 'build/index.html', fingerprint: true
-            echo 'You can access the HTML via Jenkins artifacts URL.'
+            echo 'Deployment complete! Access your Streamlit app at http://<jenkins-agent-ip>:8501'
         }
         failure {
-            echo 'Build or Test failed. Please check the logs.'
+            echo 'Build or deployment failed.'
         }
     }
 }
