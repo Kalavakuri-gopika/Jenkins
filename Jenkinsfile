@@ -4,8 +4,9 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out code...'
+                echo 'Starting code checkout from GitHub...'
                 git url: 'https://github.com/Kalavakuri-gopika/Jenkins.git', branch: 'main'
+                echo 'Code checkout complete.'
             }
         }
 
@@ -14,42 +15,43 @@ pipeline {
                 echo 'Installing Node.js dependencies...'
                 bat 'npm install'
 
-                echo 'Building web app...'
+                echo 'Building the web application...'
                 bat 'npm run build'
 
-                echo 'Verifying build output...'
+                echo '--- Verifying build output ---'
                 bat '''
                 if exist build\\index.html (
-                    echo index.html successfully built
+                    echo index.html successfully built in build\\
+                    type build\\index.html
                 ) else (
-                    echo ERROR: build\\index.html not found
+                    echo ERROR: build\\index.html not found!
                     exit 1
                 )
                 '''
+                echo '--------------------------------'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running tests...'
+                echo 'Running automated tests...'
                 bat 'npm test'
-            }
-        }
-
-        stage('Deploy via Streamlit') {
-            steps {
-                echo 'Launching Streamlit server...'
-                bat 'streamlit run streamlit_app.py --server.port 8501'
+                echo 'Tests complete.'
             }
         }
     }
 
     post {
+        always {
+            echo 'CI Pipeline execution finished.'
+        }
         success {
-            echo 'Deployment complete! Access your Streamlit app at http://<jenkins-agent-ip>:8501'
+            echo 'Build successful! Archiving artifacts...'
+            archiveArtifacts artifacts: 'build/index.html', fingerprint: true
+            echo 'You can access the HTML via Jenkins artifacts URL.'
         }
         failure {
-            echo 'Build or deployment failed.'
+            echo 'Build or Test failed. Please check the logs.'
         }
     }
 }
